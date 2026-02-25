@@ -154,22 +154,27 @@ fetch("cards.json")
 function buildImage(cardIdRaw) {
   const cardId = cardIdRaw.toUpperCase();
   const set = cardId.split("-")[0];
-  const base = `${IMAGE_BASE}/${set}/${cardId}`;
+  const baseUrl = `${IMAGE_BASE}/${set}/${cardId}`;
 
   const img = document.createElement("img");
   img.loading = "lazy";
-  img.dataset.tried = "png";
+  
+  // נגדיר רשימת סיומת אפשריות לבדיקה
+  const extensions = [".png", ".JPG", ".jpg", ".png"]; 
+  let attempt = 0;
 
   img.onerror = () => {
-    if (img.dataset.tried === "png") {
-      img.dataset.tried = "jpg";
-      img.src = base + ".jpg";
+    attempt++;
+    if (attempt < extensions.length) {
+      img.src = baseUrl + extensions[attempt];
     } else {
-      img.style.opacity = "0.3";
+      img.style.opacity = "0.3"; // אם הכל נכשל
+      img.onerror = null; 
     }
   };
 
-  img.src = base + ".png";
+  // התחלה עם הניסיון הראשון
+  img.src = baseUrl + extensions[0];
   return img;
 }
 
@@ -223,3 +228,4 @@ function renderCollage() {
 
 </body>
 </html>
+
