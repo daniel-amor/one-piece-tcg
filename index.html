@@ -17,18 +17,9 @@
       padding: 20px;
     }
 
-    header h1 {
-      margin: 0;
-    }
-
-    header p {
-      margin: 6px 0 0;
-      opacity: 0.9;
-    }
-
     .container {
       display: flex;
-      height: calc(100vh - 96px);
+      height: calc(100vh - 80px);
     }
 
     .left {
@@ -96,7 +87,7 @@
       transform: scale(1.4);
     }
 
-    .card .id {
+    .id {
       margin-top: 6px;
       font-weight: bold;
       font-size: 14px;
@@ -106,7 +97,6 @@
       display: grid;
       grid-template-columns: repeat(auto-fill, 120px);
       gap: 10px;
-      margin-top: 10px;
     }
 
     .collage-item {
@@ -129,7 +119,6 @@
       width: 22px;
       height: 22px;
       cursor: pointer;
-      font-weight: bold;
     }
   </style>
 </head>
@@ -138,138 +127,105 @@
 
 <header>
   <h1>One Piece TCG</h1>
-  <p>חיפוש קלפים + יצירת קולאז’</p>
 </header>
 
 <div class="container">
 
   <div class="left">
     <div class="search-bar">
-      <input
-        id="searchInput"
-        placeholder="שם / OP01 / EB02-003"
-        onkeydown="if(event.key==='Enter') search()"
-      />
+      <input id="searchInput" placeholder="EB02 / EB02-003 / Luffy"
+             onkeydown="if(event.key==='Enter') search()">
       <button onclick="search()">חפש</button>
     </div>
-
     <div class="grid" id="results"></div>
   </div>
 
   <div class="right">
-    <h2>🖼️ הקולאז’</h2>
+    <h2>🖼️ קולאז’</h2>
     <div class="collage-grid" id="collageGrid"></div>
   </div>
 
 </div>
 
 <script>
-/* ================= CONFIG ================= */
 const IMAGE_BASE = "https://img.expressdeal.ink";
 const MAX_RESULTS = 60;
 
-/* ================= STATE ================= */
 let cards = [];
 const selected = new Map();
 
-/* ================= LOAD DATA ================= */
 fetch("cards.json")
-  .then(res => res.json())
-  .then(data => {
-    cards = data;
-    console.log("Loaded cards:", cards.length);
-  })
+  .then(r => r.json())
+  .then(data => cards = data)
   .catch(() => alert("שגיאה בטעינת cards.json"));
 
-/* ================= IMAGE BUILDER ================= */
 function buildImage(cardId) {
   const set = cardId.split("-")[0];
   const base = `${IMAGE_BASE}/${set}/${cardId}`;
 
   const img = document.createElement("img");
   img.loading = "lazy";
-  img.src = base + ".png";
 
-  img.onerror = () => {
-    if (!img.dataset.triedJpg) {
-      img.dataset.triedJpg = "1";
-      img.src = base + ".jpg";
-    } else {
-      img.style.opacity = "0.3";
-    }
+  const tryJpg = () => {
+    const jpg = new Image();
+    jpg.loading = "lazy";
+    jpg.src = base + ".jpg";
+    jpg.onerror = () => jpg.style.opacity = "0.3";
+    img.replaceWith(jpg);
   };
+
+  img.onerror = tryJpg;
+  img.src = base + ".png";
 
   return img;
 }
 
-/* ================= SEARCH ================= */
 function search() {
-  const q = document.getElementById("searchInput").value.trim().toLowerCase();
-  const grid = document.getElementById("results");
-  grid.innerHTML = "";
+  const q = searchInput.value.toLowerCase();
+  results.innerHTML = "";
 
-  if (!q) return;
-
-  const results = cards.filter(c =>
+  const res = cards.filter(c =>
     c.id.toLowerCase().includes(q) ||
     c.set.toLowerCase().includes(q) ||
     (c.name && c.name.toLowerCase().includes(q))
-  );
+  ).slice(0, MAX_RESULTS);
 
-  if (results.length === 0) {
-    grid.innerHTML = "<p>לא נמצאו קלפים</p>";
-    return;
-  }
-
-  results.slice(0, MAX_RESULTS).forEach(card => {
+  res.forEach(card => {
     const div = document.createElement("div");
     div.className = "card";
 
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.checked = selected.has(card.id);
-
-    checkbox.onchange = e => {
-      if (e.target.checked) {
-        selected.set(card.id, card);
-      } else {
-        selected.delete(card.id);
-      }
+    const cb = document.createElement("input");
+    cb.type = "checkbox";
+    cb.checked = selected.has(card.id);
+    cb.onchange = e => {
+      e.target.checked ? selected.set(card.id, card) : selected.delete(card.id);
       renderCollage();
     };
 
-    div.appendChild(checkbox);
+    div.appendChild(cb);
     div.appendChild(buildImage(card.id));
-    div.innerHTML += `
-      <div class="id">${card.id}</div>
-      <div>${card.name || ""}</div>
-    `;
-
-    grid.appendChild(div);
+    div.innerHTML += `<div class="id">${card.id}</div><div>${card.name||""}</div>`;
+    results.appendChild(div);
   });
 }
 
-/* ================= COLLAGE ================= */
 function renderCollage() {
-  const grid = document.getElementById("collageGrid");
-  grid.innerHTML = "";
-
+  collageGrid.innerHTML = "";
   selected.forEach(card => {
     const div = document.createElement("div");
     div.className = "collage-item";
 
-    const img = buildImage(card.id);
     const btn = document.createElement("button");
     btn.className = "remove-btn";
-    btn.innerText = "−";
+    btn.textContent = "−";
     btn.onclick = () => {
       selected.delete(card.id);
       renderCollage();
     };
 
     div.appendChild(btn);
-    div.appendChild(img);
-    grid.appendChild(div);
+    div.appendChild(buildImage(card.id));
+    collageGrid.appendChild(div);
   });
 }
 </script>
