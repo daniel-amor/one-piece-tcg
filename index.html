@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="he">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>One Piece TCG – Card Collage</title>
 
   <style>
@@ -22,21 +22,23 @@
     }
 
     header p {
-      margin: 5px 0 0;
+      margin: 6px 0 0;
       opacity: 0.9;
     }
 
     .container {
       display: flex;
-      height: calc(100vh - 100px);
+      height: calc(100vh - 96px);
     }
 
+    /* LEFT */
     .left {
       flex: 3;
       padding: 20px;
       overflow-y: auto;
     }
 
+    /* RIGHT */
     .right {
       flex: 1.5;
       background: #fff;
@@ -105,6 +107,7 @@
       display: grid;
       grid-template-columns: repeat(auto-fill, 120px);
       gap: 10px;
+      margin-top: 10px;
     }
 
     .collage-item {
@@ -146,7 +149,7 @@
     <div class="search-bar">
       <input
         id="searchInput"
-        placeholder="שם / EB02 / EB02-003"
+        placeholder="שם / OP01 / OP01-003"
         onkeydown="if(event.key==='Enter') search()"
       />
       <button onclick="search()">חפש</button>
@@ -164,37 +167,42 @@
 </div>
 
 <script>
-/**
- * CONFIG
- */
+/* =======================
+   CONFIG
+======================= */
 const IMAGE_BASE = "https://img.expressdeal.ink";
 
-/**
- * DEMO DATA
- * אתה יכול להחליף את זה לטעינה מקובץ JSON:
- * fetch('cards.json').then(r => r.json())
- */
-const cards = [
-  { id: "EB02-001", name: "Kuro" },
-  { id: "EB02-002", name: "Sabo" },
-  { id: "EB02-003", name: "Tony Tony Chopper" },
-  { id: "OP01-001", name: "Luffy" },
-  { id: "OP01-002", name: "Zoro" }
-];
-
+/* =======================
+   STATE
+======================= */
+let cards = [];
 const selected = new Map();
 
-/**
- * Build image URL
- */
+/* =======================
+   LOAD cards.json
+======================= */
+fetch("cards.json")
+  .then(res => res.json())
+  .then(data => {
+    cards = data;
+    console.log("cards loaded:", cards.length);
+  })
+  .catch(err => {
+    alert("שגיאה בטעינת cards.json");
+    console.error(err);
+  });
+
+/* =======================
+   HELPERS
+======================= */
 function imageUrl(cardId) {
   const set = cardId.split("-")[0];
   return `${IMAGE_BASE}/${set}/${cardId}.png`;
 }
 
-/**
- * Search logic
- */
+/* =======================
+   SEARCH
+======================= */
 function search() {
   const q = document.getElementById("searchInput").value.trim().toLowerCase();
   const grid = document.getElementById("results");
@@ -204,7 +212,8 @@ function search() {
 
   const filtered = cards.filter(c =>
     c.id.toLowerCase().includes(q) ||
-    c.name.toLowerCase().includes(q)
+    (c.name && c.name.toLowerCase().includes(q)) ||
+    c.set.toLowerCase().includes(q)
   );
 
   if (filtered.length === 0) {
@@ -212,7 +221,7 @@ function search() {
     return;
   }
 
-  filtered.forEach(card => {
+  filtered.slice(0, 200).forEach(card => {
     const img = imageUrl(card.id);
     const checked = selected.has(img) ? "checked" : "";
 
@@ -223,15 +232,15 @@ function search() {
         onchange="toggleCard('${img}', this.checked)">
       <img src="${img}" loading="lazy">
       <div class="id">${card.id}</div>
-      <div>${card.name}</div>
+      <div>${card.name || ""}</div>
     `;
     grid.appendChild(div);
   });
 }
 
-/**
- * Collage logic
- */
+/* =======================
+   COLLAGE
+======================= */
 function toggleCard(img, checked) {
   if (checked) {
     selected.set(img, img);
