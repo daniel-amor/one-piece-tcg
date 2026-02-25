@@ -1,182 +1,175 @@
 <!DOCTYPE html>
 <html lang="he">
 <head>
-  <meta charset="UTF-8">
-  <title>One Piece TCG – Card Collage</title>
+<meta charset="UTF-8">
+<title>One Piece TCG</title>
 
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f4f7fb;
-    }
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f4f7fb;
+}
 
-    header {
-      background: linear-gradient(90deg, #1e40af, #2563eb);
-      color: white;
-      padding: 20px;
-    }
+header {
+  background: #1e40af;
+  color: white;
+  padding: 20px;
+}
 
-    .container {
-      display: flex;
-      height: calc(100vh - 80px);
-    }
+.container {
+  display: flex;
+  height: calc(100vh - 80px);
+}
 
-    .left {
-      flex: 3;
-      padding: 20px;
-      overflow-y: auto;
-    }
+.left {
+  flex: 3;
+  padding: 20px;
+  overflow-y: auto;
+}
 
-    .right {
-      flex: 1.5;
-      background: #fff;
-      border-left: 2px solid #ddd;
-      padding: 15px;
-      overflow-y: auto;
-    }
+.right {
+  flex: 1.5;
+  background: #fff;
+  border-left: 2px solid #ddd;
+  padding: 15px;
+  overflow-y: auto;
+}
 
-    .search-bar {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
+.search {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
 
-    input {
-      flex: 1;
-      padding: 10px;
-      font-size: 16px;
-    }
+input {
+  flex: 1;
+  padding: 10px;
+  font-size: 16px;
+}
 
-    button {
-      padding: 10px 14px;
-      font-size: 15px;
-      background: #2563eb;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
+button {
+  padding: 10px 14px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, 200px);
-      gap: 16px;
-    }
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 200px);
+  gap: 16px;
+}
 
-    .card {
-      background: white;
-      padding: 10px;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-      position: relative;
-      text-align: center;
-    }
+.card {
+  background: white;
+  padding: 10px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  text-align: center;
+  position: relative;
+}
 
-    .card img {
-      width: 100%;
-      border-radius: 8px;
-      background: #eee;
-      min-height: 280px;
-    }
+.card img {
+  width: 100%;
+  min-height: 280px;
+  border-radius: 8px;
+  background: #eee;
+}
 
-    .card input {
-      position: absolute;
-      top: 8px;
-      left: 8px;
-      transform: scale(1.4);
-    }
+.card input {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  transform: scale(1.4);
+}
 
-    .id {
-      margin-top: 6px;
-      font-weight: bold;
-      font-size: 14px;
-    }
+.collage-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 120px);
+  gap: 10px;
+}
 
-    .collage-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, 120px);
-      gap: 10px;
-    }
+.collage-item {
+  position: relative;
+}
 
-    .collage-item {
-      position: relative;
-    }
+.collage-item img {
+  width: 100%;
+  border-radius: 8px;
+}
 
-    .collage-item img {
-      width: 100%;
-      border-radius: 8px;
-    }
-
-    .remove-btn {
-      position: absolute;
-      top: 4px;
-      right: 4px;
-      background: red;
-      color: white;
-      border: none;
-      border-radius: 50%;
-      width: 22px;
-      height: 22px;
-      cursor: pointer;
-    }
-  </style>
+.remove-btn {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: red;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+}
+</style>
 </head>
 
 <body>
 
 <header>
-  <h1>One Piece TCG</h1>
+<h1>One Piece TCG</h1>
 </header>
 
 <div class="container">
 
-  <div class="left">
-    <div class="search-bar">
-      <input id="searchInput" placeholder="EB02 / EB02-003 / Luffy"
-             onkeydown="if(event.key==='Enter') search()">
-      <button onclick="search()">חפש</button>
-    </div>
-    <div class="grid" id="results"></div>
+<div class="left">
+  <div class="search">
+    <input id="searchInput" placeholder="OP01 / OP01-006 / Luffy"
+           onkeydown="if(event.key==='Enter') search()">
+    <button onclick="search()">חפש</button>
   </div>
+  <div class="grid" id="results"></div>
+</div>
 
-  <div class="right">
-    <h2>🖼️ קולאז’</h2>
-    <div class="collage-grid" id="collageGrid"></div>
-  </div>
+<div class="right">
+  <h2>🖼️ קולאז'</h2>
+  <div class="collage-grid" id="collage"></div>
+</div>
 
 </div>
 
 <script>
 const IMAGE_BASE = "https://img.expressdeal.ink";
 const MAX_RESULTS = 60;
-
 let cards = [];
 const selected = new Map();
 
 fetch("cards.json")
   .then(r => r.json())
-  .then(data => cards = data)
+  .then(d => cards = d)
   .catch(() => alert("שגיאה בטעינת cards.json"));
 
-function buildImage(cardId) {
+function buildImage(cardIdRaw) {
+  const cardId = cardIdRaw.toUpperCase();
   const set = cardId.split("-")[0];
   const base = `${IMAGE_BASE}/${set}/${cardId}`;
 
   const img = document.createElement("img");
   img.loading = "lazy";
+  img.dataset.tried = "png";
 
-  const tryJpg = () => {
-    const jpg = new Image();
-    jpg.loading = "lazy";
-    jpg.src = base + ".jpg";
-    jpg.onerror = () => jpg.style.opacity = "0.3";
-    img.replaceWith(jpg);
+  img.onerror = () => {
+    if (img.dataset.tried === "png") {
+      img.dataset.tried = "jpg";
+      img.src = base + ".jpg";
+    } else {
+      img.style.opacity = "0.3";
+    }
   };
 
-  img.onerror = tryJpg;
   img.src = base + ".png";
-
   return img;
 }
 
@@ -184,33 +177,31 @@ function search() {
   const q = searchInput.value.toLowerCase();
   results.innerHTML = "";
 
-  const res = cards.filter(c =>
+  cards.filter(c =>
     c.id.toLowerCase().includes(q) ||
-    c.set.toLowerCase().includes(q) ||
     (c.name && c.name.toLowerCase().includes(q))
-  ).slice(0, MAX_RESULTS);
-
-  res.forEach(card => {
+  ).slice(0, MAX_RESULTS).forEach(card => {
     const div = document.createElement("div");
     div.className = "card";
 
     const cb = document.createElement("input");
     cb.type = "checkbox";
-    cb.checked = selected.has(card.id);
     cb.onchange = e => {
-      e.target.checked ? selected.set(card.id, card) : selected.delete(card.id);
+      e.target.checked
+        ? selected.set(card.id, card)
+        : selected.delete(card.id);
       renderCollage();
     };
 
     div.appendChild(cb);
     div.appendChild(buildImage(card.id));
-    div.innerHTML += `<div class="id">${card.id}</div><div>${card.name||""}</div>`;
+    div.innerHTML += `<div><b>${card.id}</b></div>`;
     results.appendChild(div);
   });
 }
 
 function renderCollage() {
-  collageGrid.innerHTML = "";
+  collage.innerHTML = "";
   selected.forEach(card => {
     const div = document.createElement("div");
     div.className = "collage-item";
@@ -225,7 +216,7 @@ function renderCollage() {
 
     div.appendChild(btn);
     div.appendChild(buildImage(card.id));
-    collageGrid.appendChild(div);
+    collage.appendChild(div);
   });
 }
 </script>
